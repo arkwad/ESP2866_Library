@@ -1,9 +1,9 @@
 /*
- * ESP2866.cpp
+ * WifiConnection.h
  *
- *  Created on: 20.02.2018
+ *  Created on: 15.03.2018
  *      Author: Arkadiusz Wadowski
- *      Email: wadowski.arkadiusz@gmail.com
+ *    Email: wadowski.arkadiusz@gmail.com
  *
  *  Copyright (c) 2018, Arkadiusz Wadowski
  *  All rights reserved.
@@ -32,17 +32,4 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "ESP2866.h"
-
-/*** static variables definitions ***/
-
-/*** end of static variables definitions ***/
-
-/*** static functions definitions ***/
-
-/*** end of static functions definitions ***/
-
-/*** interface functions definitions ***/
-
-/*** end of interface functions definitions ***/
-
+#include <ESP8266WiFi.h>

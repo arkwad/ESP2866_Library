@@ -1,9 +1,9 @@
 /*
- * ESP2866.h
+ * TcpServer.cpp
  *
- *  Created on: 20.02.2018
+ *  Created on: 15.03.2018
  *      Author: Arkadiusz Wadowski
- *      Email: wadowski.arkadiusz@gmail.com
+ *    Email: wadowski.arkadiusz@gmail.com
  *
  *  Copyright (c) 2018, Arkadiusz Wadowski
  *  All rights reserved.
@@ -32,29 +32,38 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef INCLUDE_ESP2866_H_
-#define INCLUDE_ESP2866_H_
+#include "TcpServer.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#include "stdbool.h"
-
-    /*=== interface functions prototypes ===*/
-
-    bool ESP2866_Set_Interface_Functions(void);
-    bool ESP2866_Init_Wifi_Access_Point(void);
-    bool ESP2866_Init_Wifi_Client(void);
-    bool ESP2866_Run_Tcp_Server(void);
-    bool ESP2866_Connect_To_Server(void);
-    bool ESP2866_Send_Data(void);
-    bool ESP2866_Decode_Income_data(void);
-
-    /*=== end of interface functions prototypes ===*/
-
-#ifdef __cplusplus
+TcpServer::TcpServer(HardwareSerial& serial, uint16_t port_no):m_tcp_server(port_no),m_serial(serial){
+    m_tcp_server.begin();
 }
-#endif
-#endif /* INCLUDE_ESP2866_H_ */
+
+TcpServer::~TcpServer( void ) {
+
+}
+
+void TcpServer::poll( void ) {
+  // if new client available add it to the array is there is empty space
+  if ( m_tcp_server.hasClient() ) {
+    m_serial.print( "New client!\n" );
+    for ( int i = 0; i < MAX_NUM_OF_CLIENTS; i++ ) {
+      // search for empty place in array
+      if ( (!m_tcp_clients[i]) ) {
+        m_tcp_clients[i] = m_tcp_server.available();
+      } else if ( !m_tcp_clients[i].connected() ) {
+        m_tcp_clients[i].stop();
+        m_tcp_clients[i] = m_tcp_server.available();
+      }
+    }
+  }
+  for ( int i = 0; i < MAX_NUM_OF_CLIENTS; i++ ) {
+    if ( m_tcp_clients[i] ) {
+      if ( m_tcp_clients[i].available() ) {
+        String txt = m_tcp_clients[i].readStringUntil('a');
+        m_tcp_clients[i].write( txt.c_str() );
+        m_serial.println( txt );
+      }
+    }
+  }
+}
+
