@@ -32,3 +32,17 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 #include <WiFiClient.h>
+
+class TcpClient {
+public:
+    TcpClient(HardwareSerial& serial, String host_ip, uint16_t port_no);
+    ~TcpClient(void);
+    
+    bool send(String msg);
+
+private:
+    HardwareSerial& m_serial;
+    String m_host_ip;
+    uint16_t m_port_no;
+    WiFiClient* m_client;
+};

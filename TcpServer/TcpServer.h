@@ -39,16 +39,16 @@
 
 class TcpServer {
 
-  public:
-  TcpServer( HardwareSerial& serial, uint16_t port_no );
-  ~TcpServer( void );
+public:
+    TcpServer( HardwareSerial& serial, uint16_t port_no );
+    ~TcpServer( void );
 
-  void poll( void );
+    void poll( void );
 
-  private:
-  WiFiServer m_tcp_server;
-  WiFiClient m_tcp_clients[ MAX_NUM_OF_CLIENTS ];
-  HardwareSerial& m_serial;
+private:
+    WiFiServer m_tcp_server;
+    WiFiClient m_tcp_clients[ MAX_NUM_OF_CLIENTS ];
+    HardwareSerial& m_serial;
 };
 
 

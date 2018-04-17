@@ -33,3 +33,36 @@
  */
 
 #include "TcpClient.h"
+
+TcpClient::TcpClient(HardwareSerial& serial, String host_ip, uint16_t port_no ):m_serial(serial),
+                                                                                m_host_ip(host_ip),
+                                                                                m_port_no(port_no)
+{
+    m_client = new WiFiClient();
+    m_client->setNoDelay(true);
+}
+
+TcpClient::~TcpClient(void)
+{
+    if (m_client->connected()) {
+        m_client->stop();
+    }
+    delete m_client;
+}
+
+bool TcpClient::send(String msg)
+{
+    // if client is not alive
+    if (!m_client->connected()) {   
+        if (!m_client->connect(m_host_ip, m_port_no)) {
+            #ifdef DEBUG
+            m_serial.println("Error durring connecting to server...");
+            #endif //DEBUG
+            return false;;
+        }       
+    }
+    if (m_client->print(msg) != (msg.length())) {
+        return false;
+    }
+    return true;
+}

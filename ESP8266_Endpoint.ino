@@ -33,53 +33,48 @@
  */
 
 #include "WifiConnection.h"
-#include "TcpServer.h"
 #include "TcpClient.h"
 
-const char *ssid = "ExampleNetwork";
-const char *password = "example1234";
-TcpServer* server = NULL;
-boolean setup_went_ok = false;
-void setup() {
-  delay(1000);
-  Serial.begin(115200);// set boundrate
-  Serial.println();
-  Serial.setTimeout(60000); // set one minute as a timeout
+// for now the network ssid and passwd are fixed
+const char *ssid = "SSID";
+const char *password = "PASSWD.";
+// global prototype of pointer to TCP client
+TcpClient* client = NULL;
 
-  // device connected via UART needs to specify which app needs to be run on ESP
-  String type_of_app = Serial.readStringUntil('\r');
+// an debug logs enable flag
+//#define DEBUG
 
-  if ( type_of_app == "endpoint" ) {
-    Serial.print( "endpoint_ok\n" );
-    setup_went_ok = true;
-  } else if ( type_of_app == "hub" ) {
-    if ( !WiFi.softAP( ssid, password )){
-        setup_went_ok = false;
-        return;
-    }
-    // wait for dhcp service is ready
+void setup() 
+{
+    Serial.begin(115200);// set boundrate
+    Serial.println();
+    Serial.setTimeout(60000); // set one minute as a timeout
+
+    #ifdef DEBUG
+    Serial.print("Setting WIFI connection...\n");
+    #endif //DEBUG
+    WifiConnection wifi = WifiConnection(Serial, WIFI_STATION_MODE, ssid, password);
+    #ifdef DEBUG
+    Serial.print("Creating TCP Client...\n");
+    #endif //DEBUG
     delay(500);
-    server = new(std::nothrow) TcpServer( Serial, 1234 );
-    if ( NULL == server ){
-        setup_went_ok = false;
-        return;
-    }
-    Serial.print( "hub_ok\n" );
-    setup_went_ok = true;
-  } else {
-    Serial.print( "nok\n" );
-    setup_went_ok = false;
-  }
-  delay(500);
+    client = new TcpClient(Serial, "192.168.1.1", 1234);
+    delay(500);
+
+    #ifdef DEBUG
+    Serial.print("Setup finished successfully...\n");
+    #endif //DEBUG
 }
 
-void loop() {
-  if ( setup_went_ok != true ) {
-    Serial.print("Error during setup procedure...\n");
-    Serial.print("Restart required...\n");
-    return;
-  }
-  server->poll();
+void loop() 
+{
+    String cmd = Serial.readStringUntil('\r');
+    if (cmd != "") {
+        if (client->send(cmd)) {
+            Serial.print("OK\n");
+        }
+    } 
+    delay(500);
 }
 
 

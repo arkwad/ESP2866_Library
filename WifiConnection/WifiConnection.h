@@ -33,3 +33,25 @@
  */
 
 #include <ESP8266WiFi.h>
+
+typedef enum {
+    WIFI_STATION_MODE      = 0x00,
+    WIFI_ACCESS_POINT_MODE = 0x01,
+    WIFI_BOTH_MODE         = 0x02,
+
+    WIFI_WRONG_MODE
+} wifi_mode_t;
+
+class WifiConnection {
+
+public:
+    WifiConnection(HardwareSerial& serial, wifi_mode_t wifi_mode, const char* ssid, const char* passwd);
+    ~WifiConnection(void);
+    
+private:
+    HardwareSerial& m_serial;
+    wifi_mode_t m_wifi_mode;
+    const char* m_ssid;
+    const char* m_passwd;
+};
+

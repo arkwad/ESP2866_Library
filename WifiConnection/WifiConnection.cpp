@@ -33,3 +33,45 @@
  */
 
 #include "WifiConnection.h"
+
+WifiConnection::WifiConnection(HardwareSerial& serial,
+                               wifi_mode_t wifi_mode,
+                               const char* ssid,
+                               const char* passwd):m_serial(serial),
+                                                   m_wifi_mode(wifi_mode),
+                                                   m_ssid(ssid),
+                                                   m_passwd(passwd)
+{
+    if (WIFI_STATION_MODE == m_wifi_mode) {
+        #ifdef DEBUG
+        m_serial.println("Starting station mode...");
+        #endif //DEBUG
+        WiFi.mode(WIFI_STA); // set module to Station mode
+        // check if module has no connection
+        if (WiFi.status() != WL_CONNECTED) {
+            // if so - try to connect to given access point
+            if (!WiFi.begin(m_ssid, m_passwd)) {
+                return;
+            }
+        }
+        #ifdef DEBUG
+        m_serial.println("Will wait for connection...");
+        #endif //DEBUG
+        // wait for connection is estabilished 
+        while (WiFi.status() != WL_CONNECTED) {
+            delay(500);
+        }
+    } else if (WIFI_ACCESS_POINT_MODE == m_wifi_mode) {
+        WiFi.mode(WIFI_AP); // set module to Access Point mode
+    } else {
+        #ifdef DEBUG
+        m_serial.println("Not supported WIFI mode...");
+        #endif //DEBUG
+    }
+}
+
+WifiConnection::~WifiConnection(void)
+{
+  
+}
+
