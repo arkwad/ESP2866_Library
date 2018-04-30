@@ -64,6 +64,14 @@ void setup()
     #ifdef DEBUG
     Serial.print("Setup finished successfully...\n");
     #endif //DEBUG
+    // wait for run command
+    do {
+        String cmd = Serial.readStringUntil('\r');
+        if (cmd == "run") {
+            Serial.print("OK\n");
+            break;
+        }
+    } while (true);
 }
 
 void loop() 
