@@ -36,8 +36,8 @@
 #include "TcpClient.h"
 
 // for now the network ssid and passwd are fixed
-const char *ssid = "SSID";
-const char *password = "PASSWD.";
+const char *ssid = "Obrona2018";
+const char *password = "Obrona2018..";
 // global prototype of pointer to TCP client
 TcpClient* client = NULL;
 
@@ -58,7 +58,10 @@ void setup()
     Serial.print("Creating TCP Client...\n");
     #endif //DEBUG
     delay(500);
-    client = new TcpClient(Serial, "192.168.1.1", 1234);
+    client = new TcpClient(Serial, "192.168.1.10", 1234);
+    if (client == NULL) {
+      //Serial.print("TCP Client not created...\n");
+    }
     delay(500);
 
     #ifdef DEBUG
@@ -78,11 +81,10 @@ void loop()
 {
     String cmd = Serial.readStringUntil('\r');
     if (cmd != "") {
+      //Serial.print("echo: " + cmd);
         if (client->send(cmd)) {
             Serial.print("OK\n");
         }
     } 
     delay(500);
 }
-
-
